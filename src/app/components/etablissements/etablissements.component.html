@@ -1,0 +1,129 @@
+<main id="main" class="main">
+    <div class="pagetitle row">
+      <div class="col-md-6">
+         <h1>Etablissments</h1>
+         <nav>
+            <ol class="breadcrumb">
+               <li class="breadcrumb-item active"><a routerLink="/etablissements">Etablissments</a></li>
+            </ol>
+         </nav>
+      </div>
+      <div class="col-md-6 text-end">
+         <button class="btn-dark btn-sm p-1" data-bs-toggle="modal" data-bs-target="#EtablissementModal">
+            <i class="fa fa-plus"></i>Ajouter Etablissement
+         </button>
+       </div>
+    </div>
+    <section class="section dashboard">
+       <div class="row">
+         <div *ngFor="let e of etablissements" class="col col-xxl-3 col-md-4 col-sm-6">
+            <div class="card info-card h-100">
+               <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                     <li class="dropdown-header text-start">
+                        <h6>Actions</h6>
+                     </li>
+                     <li><button class="dropdown-item" (click)="editEtablissement(e)" data-bs-toggle="modal" data-bs-target="#EtablissementModal">Modifier</button></li>
+                     <li><button class="dropdown-item" (click)="confirme(e.id)" data-bs-toggle="modal" data-bs-target="#confirmationModal">Supprimer</button></li>
+                  </ul>
+               </div>
+               <div class="card-body">
+                  <h5 class="card-title">{{e.abreviation}} <span>| Méknes</span></h5>
+                  <div class="d-flex align-items-center">
+                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                       <img style="height:28px;" src="{{e.logo}}">
+                     </div>
+                     <div class="ps-3">
+                        <h6><a class="small" routerLink="/{{e.id}}/filieres">{{e.nomEtablissement}}</a></h6>
+                     </div>
+                  </div>
+               </div>
+              <div class="card-footer"><span class="text-muted small pt-2 ps-1">Doyen : </span> <span class="small pt-2 ps-1 fw-bold">{{e.doyen}}</span></div>
+            </div>
+         </div>
+       </div>
+    </section>
+  <div class="modal fade" id="EtablissementModal" tabindex="-1" aria-labelledby="EtablissemenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <form #etabForm="ngForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="EtablissemenModalLabel">
+            <span *ngIf="!editForm">Nouveau Etablissement</span>
+            <span *ngIf="editForm">Modifier Etablissement</span>
+          </h5>
+          <button (click)="addEtablissement()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nom" class="col-form-label">Nom Etablissement</label>
+              <input ngModel #nom="ngModel" [(ngModel)]="etablissement.nomEtablissement"
+                     minlength="10" [appCheckExist]="[etablissements,'nomEtablissement']" type="text" class="form-control" id="nom" name="nomEtablissement" required>
+              <div class="invalid-feedback">
+                <div  *ngIf="!nom.valid && (nom.touched || nom.dirty)">
+                  <div *ngIf="nom.errors?.['required']">this champ is required</div>
+                  <div *ngIf="nom.errors?.['minlength']">the minimum length should be {{nom.errors?.['minlength'].requiredLength}}</div>
+                  <div *ngIf="nom.errors?.['forbiddenName']">
+                    {{etablissement.nomEtablissement}} déja existe.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="abreviation" class="col-form-label">Abreviation</label>
+              <input ngModel #abreviation="ngModel" [(ngModel)]="etablissement.abreviation"
+                     minlength="2" type="text" class="form-control" id="abreviation" name="abreviation" required>
+              <div class="invalid-feedback">
+                <div *ngIf="!abreviation.valid && abreviation.touched">
+                  <div *ngIf="abreviation.errors?.['required']">this champ is required</div>
+                  <div *ngIf="abreviation.errors?.['minlength']">the minimum length should be {{abreviation.errors?.['minlength'].requiredLength}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="doyen" class="col-form-label">Doyen d'etablissement</label>
+              <input ngModel #doyen="ngModel" [(ngModel)]="etablissement.doyen" type="text" class="form-control" id="doyen" name="doyen" required>
+              <div class="invalid-feedback">
+                <div *ngIf="!doyen.valid && doyen.touched">
+                  <div *ngIf="doyen.errors?.['required']">this champ is required</div>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="logo" class="col-form-label">Logo Etablissement</label>
+              <input ngModel #logo="ngModel"  (change)="selectLogo($event)" type="file" class="form-control" id="logo" name="logo" required>
+              <div class="invalid-feedback">
+                <div *ngIf="!logo.valid && logo.touched">
+                  <div *ngIf="logo.errors?.['required']">this champ is required</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button (click)="addEtablissement()" id="hideModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button *ngIf="!editForm" (click)="persistEtablissement(etabForm)" type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                    [disabled]="!etabForm.form.valid">Ajouter</button>
+            <button *ngIf="editForm" [disabled]="!etabForm.form.valid" (click)="updateEtablissement()" type="button" class="btn btn-warning" data-bs-dismiss="modal">Modifier</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="confirmationModal" aria-hidden="true" aria-labelledby="confirmationModalLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalToggleLabel">Confirmation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Confirmer la suppression
+        </div>
+        <div class="modal-footer">
+          <button (click)="deleteEtablissement()" class="btn btn-danger" data-bs-dismiss="modal">Confirme</button>
+        </div>
+      </div>
+    </div>
+  </div>
+ </main>

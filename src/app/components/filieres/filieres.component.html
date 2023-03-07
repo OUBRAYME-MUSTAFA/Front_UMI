@@ -1,0 +1,151 @@
+<main id="main" class="main">
+    <div class="pagetitle row">
+        <div class="col-md-6">
+            <h1>Liste des filieres</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/etablissements">Etablissements</a></li>
+                    <li class="breadcrumb-item active">Filieres</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-md-6 text-end">
+            <button (click)="addFiliere(filiereForm)" class="btn-dark btn-sm p-1 fw-bold" data-bs-toggle="modal"
+                data-bs-target="#filiereModal">
+                <i class="fa fa-plus me-1"></i>
+                Ajouter Filiere
+            </button>
+        </div>
+    </div>
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nom filiere</th>
+                                    <th scope="col">Nombre anneés</th>
+                                    <th scope="col">Nombre semestres</th>
+                                    <th scope="col">Responsable filiere</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let filiere of filieres">
+                                    <th scope="row" class="p-2">{{filiere.nomFilier}}</th>
+                                    <td class="p-2">{{filiere.nombreAnnees}}</td>
+                                    <td class="p-2">{{filiere.nombreSemestres}}</td>
+                                    <td class="p-2">{{filiere.responsableFiliere}}</td>
+                                    <td class="p-2">
+                                        <button (click)="editFiliere(filiere)" data-bs-toggle="modal"
+                                            data-bs-target="#filiereModal"
+                                            class="border-0 text-primary bg-transparent">
+                                            <i class="bi bi-pencil-square"></i></button>
+                                        <button (click)="confirme(filiere.id)" data-bs-toggle="modal"
+                                            data-bs-target="#confirmationModal"
+                                            class="border-0 text-danger bg-transparent">
+                                            <i class="bi bi-pencil-square"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="modal fade" id="filiereModal" tabindex="-1" aria-labelledby="filiereModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+              <form #filiereForm="ngForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="filiereModalLabel">
+                      <span *ngIf="!editForm">Nouveau Filiere</span>
+                      <span *ngIf="editForm">Modifier Filiere</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nom" class="col-form-label">Nom filiere </label>
+                        <input #nom="ngModel" [(ngModel)]="filiere.nomFilier" type="text" class="form-control" id="nom" name="nomFilier"
+                               pattern="^[A-Za-z ]*$" minlength="10" [appCheckExist]="[filieres,'nomFilier']" required>
+                      <div class="invalid-feedback">
+                        <div  *ngIf="!nom.valid && (nom.touched || nom.dirty)">
+                          <div *ngIf="nom.errors?.['required']">this champ is required</div>
+                          <div *ngIf="nom.errors?.['minlength']">the minimum length should be {{nom.errors?.['minlength'].requiredLength}}</div>
+                          <div *ngIf="nom.errors?.['forbiddenName']">{{filiere.nomFilier}} déja existe.</div>
+                          <div *ngIf="nom.errors?.['pattern']">nom doite etre contient suelment des lettres.</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombreAnnees" class="col-form-label">Nombre anneés</label>
+                        <input #nombreAnnees="ngModel" [(ngModel)]="filiere.nombreAnnees" type="number"
+                               [appCheckNumber]="[{min:1,max:8},true]" class="form-control" id="nombreAnnees" name="nombreAnnees" required>
+                      <div class="invalid-feedback">
+                        <div  *ngIf="!nombreAnnees.valid && (nombreAnnees.touched || nombreAnnees.dirty)">
+                          <div *ngIf="nombreAnnees.errors?.['required']">this champ is required</div>
+                          <div *ngIf="nombreAnnees.errors?.['checkNumberBetween']">Nombre d'année doit entre 1 et 8</div>
+                          <div *ngIf="nombreAnnees.errors?.['checkInteger']">Nombre d'année doit etre int</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombreSemestres" class="col-form-label">Nombre semestres </label>
+                        <input #nombreSemestres="ngModel" [(ngModel)]="filiere.nombreSemestres" type="number"
+                               [appCheckNumber]="[{min:2},true]" class="form-control" id="nombreSemestres" name="nombreSemestres" required>
+                      <div class="invalid-feedback">
+                        <div  *ngIf="!nombreSemestres.valid && (nombreSemestres.touched || nombreSemestres.dirty)">
+                          <div *ngIf="nombreSemestres.errors?.['required']">this champ is required</div>
+                          <div *ngIf="nombreSemestres.errors?.['checkNumberBetween']">Nombre d'année doit etre >= 2</div>
+                          <div *ngIf="nombreSemestres.errors?.['checkInteger']">Nombre d'année doit etre int</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="responsableFiliere" class="col-form-label">Responsable filiere </label>
+                        <input #responsableFiliere="ngModel" [(ngModel)]="filiere.responsableFiliere" type="text"
+                               class="form-control" id="responsableFiliere" name="responsableFiliere" [appCheckExist]="[filieres,'responsableFiliere']" required>
+                      <div class="invalid-feedback">
+                        <div  *ngIf="!responsableFiliere.valid && (responsableFiliere.touched || responsableFiliere.dirty)">
+                          <div *ngIf="responsableFiliere.errors?.['required']">this champ is required</div>
+                          <div *ngIf="responsableFiliere.errors?.['forbiddenName']">
+                            {{filiere.responsableFiliere}} déja existe.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="hideModal" type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Close</button>
+                    <button *ngIf="!editForm" (click)="persistFiliere()" type="button" class="btn btn-primary"
+                            [disabled]="!filiereForm.form.valid" data-bs-dismiss="modal">Ajouter</button>
+                    <button *ngIf="editForm" (click)="updateFiliere()" type="button" class="btn btn-warning"
+                            [disabled]="!filiereForm.form.valid" data-bs-dismiss="modal">Modifier</button>
+                </div>
+              </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="confirmationModal" aria-hidden="true" aria-labelledby="confirmationModalLabel"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalToggleLabel">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Confirmer la suppression
+                </div>
+                <div class="modal-footer">
+                    <button (click)="deleteFiliere()" class="btn btn-danger" data-bs-dismiss="modal">Confirme</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

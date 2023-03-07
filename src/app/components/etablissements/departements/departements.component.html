@@ -1,0 +1,96 @@
+<main id="main" class="main">
+  <div class="pagetitle row">
+    <div class="col-md-6">
+      <h1>Liste des departements</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a routerLink="/">Etablissement</a></li>
+          <li class="breadcrumb-item active">Departements</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="col-md-6 text-end">
+      <button (click)="addDepartement()" class="btn-dark btn-sm p-1 fw-bold" data-bs-toggle="modal"
+              data-bs-target="#DepartementModal">
+        <i class="fa fa-plus me-1"></i>
+        Ajouter un departement
+      </button>
+    </div>
+  </div>
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <table class="table">
+              <thead>
+              <tr>
+                <th scope="col">ID </th>
+                <th scope="col">Chéf</th>
+                <th scope="col">Nom Departement</th>
+                <th scope="col">Actions</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let d of departements">
+                <th scope="row"><a class="link-primary" routerLink="/">{{d.id}}</a></th>
+                <td>{{d.chefDepartement}}</td>
+                <td>{{d.nomDepartement}}</td>
+                <td>
+                  <button (click)="editDepartement(d)" data-bs-toggle="modal" data-bs-target="#DepartementModal" class="border-0 text-primary bg-transparent"><i class="fa fa-pencil-square-o"></i></button>
+                  <button (click)="confirme(d.id)" data-bs-toggle="modal" data-bs-target="#confirmationModal" class="border-0 text-danger bg-transparent"><i class="fa fa-trash-o"></i></button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <p *ngIf="!departements.length" class="text-center card-title"><span>Aucun departement exist</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="modal fade" id="DepartementModal" tabindex="-1" aria-labelledby="DepartementModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="DepartementModalLabel">
+            <span *ngIf="!editForm">Nouveau Departement</span>
+            <span *ngIf="editForm">Modifier Departement</span>
+          </h5>
+          <button (click)="addDepartement()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nom" class="col-form-label">Nom Departement</label>
+            <input [(ngModel)]="departement.nomDepartement" type="text" class="form-control" id="nom">
+          </div>
+          <div class="mb-3">
+            <label for="chef" class="col-form-label">Chéf Departement</label>
+            <input [(ngModel)]="departement.chefDepartement" type="text" class="form-control" id="chef">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button (click)="addDepartement()" id="hideModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button *ngIf="!editForm" (click)="persistDepartement()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Ajouter</button>
+          <button *ngIf="editForm" (click)="udateDepartement()" type="button" class="btn btn-warning" data-bs-dismiss="modal">Modifier</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="confirmationModal" aria-hidden="true" aria-labelledby="confirmationModalLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalToggleLabel">Confirmation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Confirmer la suppression
+        </div>
+        <div class="modal-footer">
+          <button (click)="deleteDepartement()" class="btn btn-danger" data-bs-dismiss="modal">Confirme</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,298 @@
+ 
+  <main id="main" class="main">
+    <div class="pagetitle row">
+      <div class="col-md-6">
+        <legend>Liste des Formations </legend><hr>
+      </div>
+      <div class="col-md-6 text-end">
+        <button (click)="change(false)" (click)="resetFormation(formation_f)" type="button" class="btn-dark btn-sm p-1" data-bs-toggle="modal" data-bs-target="#ajouterFormation">
+          <i class="fa fa-plus"></i>
+          Add Formation
+        </button>
+        </div>
+
+      <!--form #f="ngForm" (ngSubmit)="onChercher(Value)">
+        <div class="form-group">
+          <input [(ngModel)]="value" type="text" name="keyword" placeholder="mot clé"  ngModel>
+          <button type="submit" class="btn btn-primary m-lg-1">search</button>
+        </div>
+      </form-->
+
+      <div id="custom-search" class="search">
+        <div class="search float-end">
+          Search: <input size="22" type="text" placeholder="Search.." [(ngModel)]="search">
+        
+        </div>
+      </div>
+      <br>
+      <br>
+      <section class="section">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+      <table class="table table-striped" >
+        <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Acronyme</th>
+          <th scope="col">Intitulé</th>
+          <th scope="col">Responsable</th>
+          <th scope="col">Document descriptif</th>
+          <th scope="col">Image descriptif</th>
+          <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let formation of formations| filter:search;">
+          <th scope="row">{{formation.id}}</th>
+          <td class="p-2">{{formation.name}}</td>
+          <td class="p-2">{{formation.type}}</td>
+          <td class="p-2">{{formation.responsable?.nom+" "+formation.responsable?.prenom}}</td>
+          <td class="p-2"><button class=" btn-success" (click)="consulterDocument(formation.id)">View Document</button> </td>
+          <td class="p-2"><button class="btn-dark"     (click)="consulterImage(formation.id)">View image</button> </td>
+    
+          <td>
+            <div class="d-grid gap-2 d-md-block">
+              <button (click)="editFormation(formation)"       type="button" class="border-0 text-primary fa-lg bg-transparent" data-bs-toggle="modal" data-bs-target="#updateFormation"> <i class="fa fa-pencil-square-o"></i></button>
+              <button (click)="deleteFormation(formation.id)"  type="button" class="border-0 text-danger  fa-lg bg-transparent"  >                                                        <i class="fa fa-trash-o"        ></i></button>&nbsp;
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+</div>
+  </main>
+  
+  <div class="modal fade" id="ajouterFormation" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          <h5 *ngIf="!editForm" class="modal-title fw-bold">Ajouter Formation</h5>
+          <h5 *ngIf="editForm" class="modal-title fw-bold">Modifier Formation</h5>
+
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"><i class="bi bi-x-lg"></i></span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <!--------------------------------------- Add  Formation---------------------------->
+
+          <form  #formation_f="ngForm">
+            
+            <div class="mb-3">
+              <label class="form-label">Nom Specialete</label>
+              <input [(ngModel)]="myFormation.name"  [ngModelOptions]="{standalone: true}"    type="text" class="form-control" name="titre" placeholder="Nom Specialete " 
+              ngModel #Nom="ngModel" minlength="4" [appCheckExist]="[formations,'Nom']"  required>
+              <div class="invalid-feedback">
+                <div  *ngIf="!Nom.valid && (Nom.touched || Nom.dirty)">
+                  <div *ngIf="Nom.errors?.['required']">this champ is required</div>
+                  <div *ngIf="Nom.errors?.['minlength']">the minimum length should be {{Nom.errors?.['minlength'].requiredLength}}</div>
+                  <!--div *ngIf="Nom.errors?.['forbiddenName']">
+                    {{Nom}} déja existe.
+                  </div-->
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Type Formation</label>
+                <input   [(ngModel)]="myFormation.type"  [ngModelOptions]="{standalone: true}"   type="text" class="form-control" id ="formationtype" name="titre32" placeholder="Type " 
+                ngModel #ttype="ngModel" minlength="4" [appCheckExist]="[formations,'ttype']"  required>
+                <div class="invalid-feedback">
+                  <div  *ngIf="!ttype.valid && (ttype.touched || ttype.dirty)">
+                    <div *ngIf="ttype.errors?.['required']">this champ is required</div>
+                    <div *ngIf="ttype.errors?.['minlength']">the minimum length should be {{ttype.errors?.['minlength'].requiredLength}}</div>
+                    <!--div *ngIf="ttype.errors?.['forbiddenName']">
+                      {{myFormation.type}} déja existe.
+                    </div-->
+                  </div>
+                </div>
+              </div>
+
+            <div class="mb-3">
+                <label for="responsable">Responsable</label>
+                <select #responsable="ngModel" class="form-control" id="responsableFiliere1" name="responsable" name="libele" [(ngModel)]="myFormation.responsable" [ngModelOptions]="{standalone: true}"  ngModel required>
+                    <option [ngValue]="p" *ngFor="let p of chercheurs;let index=index">{{p.nom+" "+p.prenom}}</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    <div  *ngIf="!responsable.valid && (responsable.touched || responsable.dirty)">
+                      <div *ngIf="responsable.errors?.['required']">this champ is required</div>
+                     
+                    </div>
+                  </div>
+            </div>
+            <div>
+              <div class="mb-3">
+                <label for="document" class="col-form-label">Document descriptif</label>
+                <input ngModel #Document="ngModel"  accept="application/pdf" (change)="selectDocument($event)" type="file" class="form-control" id="logo" name="file" required>
+                <div class="invalid-feedback">
+                  <div *ngIf="!Document.valid && Document.touched">
+                    <div *ngIf="Document.errors?.['required']">this champ is required</div>
+                  </div>
+                </div>
+              </div>
+            <!--label class="btn btn-default">
+              <input type="file" (change)="selectFile($event)" />
+            </label-->
+          </div>
+          <div>
+            <div class="mb-3">
+              <label for="Image" class="col-form-label">Image descriptif</label>
+              <input ngModel #Image="ngModel"  accept="image/*" (change)="selectImage($event)" type="file" class="form-control" id="logo" name="image" required>
+              <div class="invalid-feedback">
+                <div *ngIf="!Image.valid && Image.touched">
+                  <div *ngIf="Image.errors?.['required']">this champ is required</div>
+                </div>
+              </div>
+            </div>
+          <!--label class="btn btn-default">
+            <input type="file" (change)="selectFile($event)" />
+          </label-->
+        </div>
+         
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"   (click)="resetFormation(formation_f)">Close</button>
+              <button  type="submit" class="btn btn-success" data-bs-dismiss="modal"    (click)="addFormation(formation_f)" [disabled]="!responsable.valid  || !Image.valid || !Document.valid || !Nom.valid ||!ttype.valid">Add Formation</button>
+            </div>
+            
+          </form>
+  
+      </div>
+    </div>
+  </div>  
+</div>
+
+<!--------------------------------------------------------------------  update  Formation---------------------------->
+
+ <div class="modal fade" id="updateFormation" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h5 class="modal-title fw-bold">Modifier Formation</h5>
+
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"><i class="bi bi-x-lg"></i></span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <form  #fromatiom_f2="ngForm">
+          
+          
+          
+          <div class="mb-3">
+            <label class="form-label">Nom Specialete</label>
+            <input [(ngModel)]="myFormation.name"  [ngModelOptions]="{standalone: true}" type="text" class="form-control" name="titre" placeholder="Nom Specialete "
+            ngModel #name_formation="ngModel" minlength="4"  required>
+              <div class="invalid-feedback">
+                <div  *ngIf="!name_formation.valid && (name_formation.touched || name_formation.dirty)">
+                  <div *ngIf="name_formation.errors?.['required']">this champ is required</div>
+                  <div *ngIf="name_formation.errors?.['minlength']">the minimum length should be {{name_formation.errors?.['minlength'].requiredLength}}</div>
+                 
+                </div>
+              </div>
+          </div>
+
+          <div class="mb-3">
+              <label class="form-label">Type Formation</label>
+              <input [(ngModel)]="myFormation.type"  [ngModelOptions]="{standalone: true}" type="text" class="form-control" name="titre" placeholder="Type "
+              ngModel #type_formation="ngModel" minlength="4"  required>
+              <div class="invalid-feedback">
+                <div  *ngIf="!type_formation.valid && (type_formation.touched || type_formation.dirty)">
+                  <div *ngIf="type_formation.errors?.['required']">this champ is required</div>
+                  <div *ngIf="type_formation.errors?.['minlength']">the minimum length should be {{type_formation.errors?.['minlength'].requiredLength}}</div>
+                 
+                </div>
+              </div>
+            </div>
+
+          <div class="mb-3">
+              <label for="responsable">Responsable</label>
+              <select class="form-control" name="libele" [(ngModel)]="myFormation.responsable" [ngModelOptions]="{standalone: true}"  ngModel required>
+                  <option [ngValue]="p" *ngFor="let p of chercheurs;let index=index">{{p.nom+" "+p.prenom}}</option>
+                </select>
+          </div>
+          <div>
+            <div class="mb-3">
+              <label for="document" class="col-form-label">Document descriptif</label>
+              <input ngModel #Document="ngModel"  accept="application/pdf" (change)="selectDocument($event)" type="file" class="form-control" id="logo" name="file" required>
+              <div class="invalid-feedback">
+                <div *ngIf="!Document.valid && Document.touched">
+                  <div *ngIf="Document.errors?.['required']">this champ is required</div>
+                </div>
+              </div>
+            </div>
+
+        </div>
+        <div>
+          <div class="mb-3">
+            <label for="Image" class="col-form-label">Image descriptif</label>
+            <input ngModel #Image="ngModel"  accept="image/*" (change)="selectImage($event)" type="file" class="form-control" id="logo" name="image" required>
+            <div class="invalid-feedback">
+              <div *ngIf="!Image.valid && Image.touched">
+                <div *ngIf="Image.errors?.['required']">this champ is required</div>
+              </div>
+            </div>
+          </div>
+        <!--label class="btn btn-default">
+          <input type="file" (change)="selectFile($event)" />
+        </label-->
+      </div>
+       
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"  (click)="resetFormation(fromatiom_f2)">Close</button>
+           <button  type="submit" class="btn btn-warning" data-bs-dismiss="modal"    (click)="updateFormation(fromatiom_f2)" [disabled]="!responsable.valid || !name_formation.valid ||!type_formation.valid">edit Formation</button>
+          </div>
+          
+        </form>
+
+    </div>
+  </div>
+</div> </div>
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="container d-flex pl-0">
+          <h5 class="modal-title ml-2" id="exampleModalLabel">Image</h5>
+        </div>
+
+      </div>
+      <div class="modal-body">
+        <img [src] = "fileDb" width="460" style="justify-content: center" >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" style="color: white; font-weight: bold;" (click)="closeImage()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="DocumentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="container d-flex pl-0">
+          <h5 class="modal-title ml-2" id="exampleModal">Document</h5>
+        </div>
+
+      </div>
+      <div class="modal-body">
+        <iframe [src] = "fileDb" width="450" height="600" style="justify-content: center" ></iframe>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" style="color: white; font-weight: bold;" (click)="closeDocument()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+  

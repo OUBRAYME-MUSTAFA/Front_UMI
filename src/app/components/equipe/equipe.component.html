@@ -1,0 +1,336 @@
+  <main id="main" class="main">
+    <div class="pagetitle row">
+      <div class="col-md-6">
+      <legend>Liste des Equipes </legend><hr>
+      </div>
+      <!--<button class="btn btn-primary" style="margin-top: 10px;">Ajouter une actualites</button>-->
+      <div class="col-md-6 text-end">
+      <button (click)="change(false)" type="button" class="btn-dark btn-sm p-1" data-bs-toggle="modal" data-bs-target="#ajouterEquipe">
+        <i class="fa fa-plus"></i>
+        Add Equipe
+      </button>
+      </div>
+      <!--form #f="ngForm" (ngSubmit)="onChercher(Value)">
+        <div class="form-group">
+          <input [(ngModel)]="value" type="text" name="keyword" placeholder="mot clé"  ngModel>
+          <button type="submit" class="btn btn-primary m-lg-1">search</button>
+        </div>
+      </form-->
+      <div id="custom-search" class="search">
+        <div class="search float-end">
+          Search: <input size="22" type="text" placeholder="Search.." [(ngModel)]="search">
+        
+        </div>
+      </div>
+      <br>
+      <br>
+      <section class="section">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+      <table class="table table-striped" *ngIf="axes">
+        <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Acronyme</th>
+          <th scope="col">Intitulé</th>
+          <th scope="col">Responsable</th>
+          <th scope="col">Members</th>
+          <th scope="col">Domains de recherche</th>
+          <th scope="col">Labo de recherche</th>
+          <th scope="col">Action</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let equipe1 of equipes | filter:search;">
+          <th scope="row">{{equipe1.id}}</th>
+          <td>{{equipe1.acro_equipe}}</td>
+          <td>{{equipe1.intitule}}</td>
+          <td>Pr.{{equipe1.responsable?.nom+" "+equipe1.responsable?.prenom}}</td>
+          <td><dd *ngFor="let me of toArray(equipe1.member)">-Pr {{me.nom+" "+me.prenom}}</dd></td>
+          <td><dd *ngFor="let axe of toArray(equipe1.axes)">- {{axe.name}}</dd></td>
+          <td>{{equipe1.labo?.acro_labo}}</td>
+    
+          <td>
+            <div class="d-grid gap-2 d-md-block">
+              <button (click)="editEquipe(equipe1)"        type="button" class="border-0 text-primary  fa-lg bg-transparent" data-bs-toggle="modal" data-bs-target="#updateEquipe"> <i class="fa fa-pencil-square-o"></i></button>
+              <button (click)=" deleteEquipe(equipe1.id)"  type="button" class="border-0 text-danger fa-lg bg-transparent" >                                                       <i class="fa fa-trash-o"></i></button>&nbsp;
+
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+    </div>
+  </main>
+  
+  <div class="modal fade" id="ajouterEquipe" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          <h5  class="modal-title fw-bold">Ajouter Equipe</h5>
+
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"><i class="bi bi-x-lg"></i></span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <!--------------------------------------- Add   Equipe---------------------------->
+
+          <form  #axe="ngForm"  >
+            
+            <div class="mb-3">
+              <label class="form-label">Acronyme</label>
+              <input [(ngModel)]="myEquipe.acro_equipe"  [ngModelOptions]="{standalone: true}" ngModel #acro_equipe="ngModel" minlength="4" [appCheckExist]="[equipes,'acro_equipe']" type="text" class="form-control" name="titre2" placeholder="Acronyme " required>
+            
+              <div class="invalid-feedback">
+                <div  *ngIf="!acro_equipe.valid && (acro_equipe.touched || acro_equipe.dirty)">
+                  <div *ngIf="acro_equipe.errors?.['required']">this champ is required</div>
+                  <div *ngIf="acro_equipe.errors?.['minlength']">the minimum length should be {{acro_equipe.errors?.['minlength'].requiredLength}}</div>
+                  <div *ngIf="acro_equipe.errors?.['forbiddenName']">
+                    {{myEquipe.acro_equipe}} déja existe.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Intitulé</label>
+                <input [(ngModel)]="myEquipe.intitule"  [ngModelOptions]="{standalone: true}" ngModel #intitule="ngModel" minlength="4" [appCheckExist]="[equipes,'intitule']"  type="text" class="form-control" name="titre7" placeholder="Intitulé" required>
+                <div class="invalid-feedback">
+                  <div  *ngIf="!intitule.valid && (intitule.touched || intitule.dirty)">
+                    <div *ngIf="intitule.errors?.['required']">this champ is required</div>
+                    <div *ngIf="intitule.errors?.['minlength']">the minimum length should be {{intitule.errors?.['minlength'].requiredLength}}</div>
+                    <div *ngIf="intitule.errors?.['forbiddenName']">
+                      {{myEquipe.intitule}} déja existe.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+           
+            <div class="mb-3">
+                <label for="responsable">Responsable</label>
+                
+                <select #responsable="ngModel" 
+                class="form-control" id="responsableFiliere" name="responsable" name="libele" [(ngModel)]="myEquipe.responsable" [ngModelOptions]="{standalone: true}" placeholder="Responsable " required>
+                    <option [ngValue]="p" *ngFor="let p of chercheurs;let index=index">{{p.nom+" "+p.prenom}}</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    <div  *ngIf="!responsable.valid && (responsable.touched || responsable.dirty)">
+                      <div *ngIf="responsable.errors?.['required']">this champ is required</div>
+                     
+                    </div>
+                  </div>
+            </div>
+          
+            <div class="col-md-8 mb-3">
+              <label>Memebers</label>
+              <ng-multiselect-dropdown #vbbar="ngModel" 
+                [settings]="dropdownSettings_membre"
+                [data]="chercheurs"
+                [(ngModel)]="myEquipe.member" [ngModelOptions]="{standalone: true}" 
+                (onSelect)="onItemSelect()"
+                (onSelectAll)="onSelectAll()"
+                (onDeSelect)="onItemDeSelect()"
+                (onDeSelectAll)="onUnSelectAll()">>
+              </ng-multiselect-dropdown>
+              <div class="invalid-feedback">
+                <div  *ngIf=" vbbar.touched ">
+                  <div *ngIf="this.checkfct()">selection au minimum 4 champ</div> </div>
+              </div>
+          </div>
+                
+            <div class="col-md-8 mb-3">
+                <label for="validationDefault02">Listes des Axes</label>
+                <ng-multiselect-dropdown
+                  [settings]="dropdownSettings_axe"
+                  [data]="axes"
+                  [(ngModel)]="myEquipe.axes" [ngModelOptions]="{standalone: true}" 
+                  (onSelect)="onItemSelect()"
+                  (onSelectAll)="onSelectAll()"
+                  (onDeSelect)="onItemDeSelect()"
+                  (onDeSelectAll)="onUnSelectAll()">
+                </ng-multiselect-dropdown>
+            </div>
+
+            <div *ngIf="editForm" class="mb-3">
+              <label for="Laboratoire">Laboratoire</label>
+              
+              <select class="form-control" name="libele" [(ngModel)]="myEquipe.labo" [ngModelOptions]="{standalone: true}" placeholder="Laboratoire " required>
+                  <option [ngValue]="p" *ngFor="let p of labos;let index=index">{{p.acro_labo}}</option>
+                </select>
+                
+              </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetEquipe()">Close</button>
+              <button *ngIf="!editForm"  type="submit" class="btn btn-success" data-bs-dismiss="modal"  (click)="addEquipe()" [disabled]="!acro_equipe.valid || !intitule.valid || !responsable.valid && (responsable.touched || responsable.dirty) || this.checkfct()">Add Equipe</button>
+            </div>
+            
+          </form>
+  
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  <!-- ========================================add Labo a Equipe    -->
+
+  
+  <div class="modal fade" id="ajouterLabo" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          <h5 *ngIf="!editForm" class="modal-title fw-bold">Ajouter Equipe</h5>
+          <h5 *ngIf="editForm"  class="modal-title fw-bold">Modifier Equipe</h5>
+
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"><i class="bi bi-x-lg"></i></span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+          <form  #axe="ngForm"  >
+            <label for="Laboratoire">Laboratoire</label>
+              
+              <select class="form-control" name="libele" [(ngModel)]="myEquipe.labo" [ngModelOptions]="{standalone: true}" placeholder="Laboratoire " required>
+                  <option [ngValue]="p" *ngFor="let p of labos;let index=index">{{p.acro_labo}}</option>
+                </select>
+                
+              
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetEquipe()">Close</button>
+              <button type="submit" class="btn btn-warning" data-bs-dismiss="modal"  (click)="updateEquipe()" >edit Equipe</button>
+            </div>
+            
+          </form>
+  
+      </div>
+    </div>
+  </div></div>
+
+
+
+
+
+
+  <!-- ================================================================================= Update Equipe -->
+
+
+
+
+  <div class="modal fade" id="updateEquipe" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          <h5  class="modal-title fw-bold">Modifier Equipe</h5>
+
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"><i class="bi bi-x-lg"></i></span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+          <form  #axe="ngForm"  >
+            
+            <div class="mb-3">
+              <label class="form-label">Acronyme</label>
+              <input [(ngModel)]="myEquipe.acro_equipe"  [ngModelOptions]="{standalone: true}" ngModel #acro_equipe1="ngModel" minlength="4" type="text" class="form-control" name="titre22" placeholder="Acronyme " required>
+            
+              <div class="invalid-feedback">
+                <div  *ngIf="!acro_equipe1.valid && (acro_equipe1.touched || acro_equipe1.dirty)">
+                  <div *ngIf="acro_equipe1.errors?.['required']">this champ is required</div>
+                  <div *ngIf="acro_equipe1.errors?.['minlength']">the minimum length should be {{acro_equipe1.errors?.['minlength'].requiredLength}}</div>  
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Intitulé</label>
+                <input [(ngModel)]="myEquipe.intitule"  [ngModelOptions]="{standalone: true}" ngModel #intitule1="ngModel" minlength="4"  type="text" class="form-control" name="titre77" placeholder="Intitulé" required>
+                <div class="invalid-feedback">
+                  <div  *ngIf="!intitule1.valid && (intitule1.touched || intitule1.dirty)"> 
+                    <div *ngIf="intitule1.errors?.['required']">this champ is required</div>
+                    <div *ngIf="intitule1.errors?.['minlength']">the minimum length should be {{intitule1.errors?.['minlength'].requiredLength}}</div>
+                    
+                  </div>
+                </div>
+              </div>
+
+           
+            <div class="mb-3">
+                <label for="responsable">Responsable</label>
+                
+                <select #responsable="ngModel" 
+                class="form-control" id="responsableFiliere" name="responsable" name="libele0" [(ngModel)]="myEquipe.responsable" [ngModelOptions]="{standalone: true}" placeholder="Responsable " required>
+                    <option [ngValue]="p" *ngFor="let p of chercheurs;let index=index">{{p.nom+" "+p.prenom}}</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    <div  *ngIf="!responsable.valid && (responsable.touched || responsable.dirty)">
+                      <div *ngIf="responsable.errors?.['required']">this champ is required</div>
+                     
+                    </div>
+                  </div>
+            </div>
+          
+            <div class="col-md-8 mb-3">
+                <label>Memebers</label>
+                <ng-multiselect-dropdown #vbbbbar="ngModel" 
+                  [settings]="dropdownSettings_membre"
+                  [data]="chercheurs"
+                  [(ngModel)]="myEquipe.member" [ngModelOptions]="{standalone: true}" 
+                  (onSelect)="onItemSelect()"
+                  (onSelectAll)="onSelectAll()"
+                  (onDeSelect)="onItemDeSelect()"
+                  (onDeSelectAll)="onUnSelectAll()">>
+                </ng-multiselect-dropdown>
+                <div class="invalid-feedback">
+                  <div  *ngIf=" vbbbbar.touched ">
+                    <div *ngIf="this.checkfct()">selection au minimum 4 champ</div> </div>
+                </div>
+            </div>
+            <div class="col-md-8 mb-3">
+                <label for="validationDefault02">Listes des Axes</label>
+                <ng-multiselect-dropdown
+                  [settings]="dropdownSettings_axe"
+                  [data]="axes"
+                  [(ngModel)]="myEquipe.axes" [ngModelOptions]="{standalone: true}" 
+                  (onSelect)="onItemSelect()"
+                  (onSelectAll)="onSelectAll()"
+                  (onDeSelect)="onItemDeSelect()"
+                  (onDeSelectAll)="onUnSelectAll()">>
+                </ng-multiselect-dropdown>
+            </div>
+
+            <div *ngIf="editForm" class="mb-3">
+              <label for="Laboratoire">Laboratoire</label>
+              
+              <select class="form-control" name="libele" [(ngModel)]="myEquipe.labo" [ngModelOptions]="{standalone: true}" placeholder="Laboratoire " required>
+                  <option [ngValue]="p" *ngFor="let p of labos;let index=index">{{p.acro_labo}}</option>
+                </select>
+                
+              </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetEquipe()">Close</button>
+              <button type="submit" class="btn btn-warning" data-bs-dismiss="modal"  (click)="updateEquipe()"  [disabled]="!acro_equipe1.valid || !intitule1.valid || this.checkfct()">edit Equipe</button>
+            </div>
+          </form>
+  
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+
+  <main id="main" class="main">
+    <div class="pagetitle row">
+      <div class="col-md-6">
+        <legend>Liste des Axes </legend><hr>
+      </div>
+        <!--div [hidden]='hideFormError' class="alert alert-danger col-md-4" role="alert">
+          {{ formMessage }}
+        </div>
+  
+        <div [hidden]='hideFormOk' class="alert alert-success col-md-4" role="alert">
+          {{ formMessage }}
+        </div-->
+        <div class="col-md-6 text-end">
+        <button (click)="change(false)" type="button" class="btn-dark btn-sm p-1" data-bs-toggle="modal" data-bs-target="#ajouterAxe">
+          <i class="fa fa-plus"></i>
+          Ajouter Axe
+        </button>
+        </div>
+        <div id="custom-search" class="search">
+          <div class="search float-end">
+            Search: <input size="22" type="text" placeholder="Search.." [(ngModel)]="search">
+          
+          </div>
+        </div>
+      <br>
+      <br>
+      <section class="section">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+      <table class="table table-striped" >
+        <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">name</th>
+          <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let axe of axes | filter:search;">
+          <th scope="row">{{axe.id}}</th>
+          <td>{{axe.name}}</td>
+    
+          <td>
+            <div class="d-grid gap-2 d-md-block">
+              <button (click)="editAxe(axe)"      type="button"class="border-0 text-primary fa-lg bg-transparent" data-bs-toggle="modal" data-bs-target="#ajouterAxe"><i class="fa fa-pencil-square-o"></i></button>
+             <button (click)="confirme(axe.id)" data-bs-toggle="modal" data-bs-target="#confirmationModal" type="button"class="border-0 text-danger  fa-lg bg-transparent"><i class="fa fa-trash-o"></i></button>&nbsp;
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+</div>
+<div class="modal fade" id="confirmationModal" aria-hidden="true" aria-labelledby="confirmationModalLabel"
+tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+ <div class="modal-header">
+   <h5 class="modal-title" id="exampleModalToggleLabel">Confirmation</h5>
+   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+ </div>
+ <div class="modal-body">
+   Confirmer la suppression 
+ </div>
+ <div class="modal-footer">
+  <button (click)="deleteAxe()" class="btn btn-danger" data-bs-dismiss="modal">Confirme</button>
+ </div>
+</div>
+</div>
+</div>
+  </main>
+  
+  <div class="modal fade" id="ajouterAxe" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          <h5 *ngIf="!editForm" class="modal-title fw-bold">Ajouter Axe</h5>
+          <h5 *ngIf="editForm" class="modal-title fw-bold">Modifier Axe</h5>
+
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"><i class="bi bi-x-lg"></i></span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <!------------------------------------------------- Add & update  Axe---------------------------->
+
+          <form  #axe="ngForm"    >
+            <!-- 2 column grid layout with text inputs for the first and last names #actualite="ngForm" actualite.value -->
+            
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input [(ngModel)]="myAxe.name"  [ngModelOptions]="{standalone: true}" type="text" class="form-control" name="titre" placeholder="Axe Name " 
+              ngModel #acro_axe="ngModel" minlength="4" [appCheckExist]="[axes,'acro_axe']"  required>
+              <div class="invalid-feedback">
+                <div  *ngIf="!acro_axe.valid && (acro_axe.touched || acro_axe.dirty)">
+                  <div *ngIf="acro_axe.errors?.['required']">this champ is required</div>
+                  <div *ngIf="acro_axe.errors?.['minlength']">the minimum length should be {{acro_axe.errors?.['minlength'].requiredLength}}</div>
+                  <div *ngIf="acro_axe.errors?.['forbiddenName']">
+                    {{myAxe.name}} déja existe.
+                  </div>
+                </div>
+              </div>
+            </div>
+         
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetAxe(axe)">Close</button>
+              <button  *ngIf="!editForm" type="submit" class="btn btn-success" data-bs-dismiss="modal" [disabled]="!acro_axe.valid" (click)="addAxe(axe)">Add Axe</button>
+              <button *ngIf="editForm" type="submit" class="btn btn-warning" data-bs-dismiss="modal" [disabled]="!acro_axe.valid" (click)="updateAxe(axe)">edit Axe</button>
+            </div>
+            
+          </form>
+  
+      </div>
+    </div>
+  </div>
+  
